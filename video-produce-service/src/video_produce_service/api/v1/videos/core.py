@@ -1,7 +1,8 @@
+import json
 import shutil
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from time import sleep
+from uuid import uuid4
 
 import cv2
 from fastapi import UploadFile
@@ -26,8 +27,18 @@ def _save_upload_file_tmp(upload_file: UploadFile) -> Path:
 def upload_video_kafka(file: UploadFile, kafka_client: KafkaClient):
     path = _save_upload_file_tmp(file)
     video = cv2.VideoCapture(str(path))
+    frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = int(video.get(cv2.CAP_PROP_FPS))
+    video_meta = VideoMeta(
+        name=file.filename,
+        content_type=file.content_type,
+        frames=frames,
+        fps=fps,
+    )
 
-    video_meta = VideoMeta(name=file.filename, content_type=file.content_type)
+    kafka_client.producer.send(
+        settings.kafka_video_topic, json.dumps(video_meta.dict()).encode("utf-8")
+    )
 
     logger.info(f"Start publishing video {video_meta.name}")
 
