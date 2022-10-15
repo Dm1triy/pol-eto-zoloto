@@ -6,6 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
 from .api.app_status import status_router
+from .api.v1.videos.views import videos_router
+from .external.kafka.kafka_utils import close_kafka_connection, init_kafka_connection
 
 app = FastAPI(
     title="Video Produce Service V1",
@@ -28,6 +30,7 @@ def create_app():
     logger.configure(**logger_config)
 
     app.include_router(status_router)
+    app.include_router(videos_router)
 
     app.add_middleware(
         CORSMiddleware,
@@ -36,5 +39,8 @@ def create_app():
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    app.add_event_handler("startup", init_kafka_connection)
+    app.add_event_handler("shutdown", close_kafka_connection)
 
     return app
