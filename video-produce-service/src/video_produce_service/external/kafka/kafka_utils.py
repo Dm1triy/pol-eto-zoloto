@@ -1,6 +1,5 @@
+from confluent_kafka import Producer
 from loguru import logger
-
-from kafka import KafkaProducer
 
 from ...settings import settings
 from .kafka import kafka_client
@@ -9,7 +8,7 @@ from .kafka import kafka_client
 def init_kafka_connection():
     logger.info("Start kafka connection")
     try:
-        kafka_client.producer = KafkaProducer(bootstrap_servers=settings.kafka_bootstrap_servers)
+        kafka_client.producer = Producer({"bootstrap.servers": settings.kafka_bootstrap_servers})
     except Exception as exc:
         logger.error(exc)
         logger.warning("Fatal error was occured while kafka was starting")
@@ -19,4 +18,4 @@ def init_kafka_connection():
 def close_kafka_connection():
     logger.info("Close kafka connection")
     if kafka_client.producer:
-        kafka_client.producer.close()
+        kafka_client.producer.flush()
