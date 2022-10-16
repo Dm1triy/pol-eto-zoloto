@@ -1,8 +1,8 @@
-from kafka import KafkaProducer
+from confluent_kafka import Producer
 
 
 class KafkaClient:
-    producer: KafkaProducer | None
+    producer: Producer | None
 
 
 kafka_client = KafkaClient()
