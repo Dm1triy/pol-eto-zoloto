@@ -11,7 +11,7 @@ from ....settings import settings
 from .models import VideoMeta
 
 
-def _save_upload_file_tmp(upload_file: File, ext: str = "mp4") -> tuple[Path, str]:
+def _save_upload_file_tmp(upload_file: File, ext: str = "jpg") -> tuple[Path, str]:
     filename = f"{uuid4()}.{ext}"
     suffix = Path(filename).suffix
     with NamedTemporaryFile(delete=False, suffix=suffix) as tmp:

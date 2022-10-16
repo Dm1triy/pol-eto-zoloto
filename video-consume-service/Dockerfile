@@ -6,8 +6,8 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /code
 
 RUN apt-get update \
-    && apt-get -y install netcat gcc \
-    && apt-get clean
+    && apt-get -y install netcat gcc ffmpeg libsm6 libxext6 \
+    && apt-get clean \
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=on
 
@@ -20,4 +20,4 @@ RUN poetry install --no-dev
 
 COPY src /code/src
 
-CMD ["uvicorn", "src.__main__:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "src.__main__:app", "--host", "0.0.0.0", "--port", "8001"]
